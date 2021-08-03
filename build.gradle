@@ -41,3 +41,7 @@ dependencies {
     implementation 'io.github.cdimascio:dotenv-kotlin:6.2.2'
 
 }
+
+task stage(dependsOn: ['build', 'clean']) {
+    mustRunAfter('clean')
+}
