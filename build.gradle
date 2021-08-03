@@ -1,0 +1,43 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.5.10'
+    id 'application'
+}
+
+group = 'dev.omnicron.bots'
+version = '1.0-BETA'
+
+repositories {
+    mavenCentral()
+    maven {
+        name 'm2-dv8tion'
+        url 'https://m2.dv8tion.net/releases'
+    }
+
+    maven {
+        url = 'https://repo.mattmalec.com/repository/releases'
+    }
+}
+
+
+
+compileKotlin {
+    kotlinOptions.jvmTarget = '11'
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = '11'
+}
+
+application {
+    mainClassName = 'MainKt'
+}
+
+dependencies {
+    implementation('net.dv8tion:JDA:4.3.0_277') {
+        exclude module: 'opus-java'
+    }
+
+    implementation 'com.mattmalec:Pterodactyl4J:2.BETA_64'
+    implementation 'io.github.cdimascio:dotenv-kotlin:6.2.2'
+
+}
