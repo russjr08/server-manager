@@ -2,6 +2,7 @@ package dev.omnicron.bots.server_manager
 
 import com.mattmalec.pterodactyl4j.PteroBuilder
 import com.mattmalec.pterodactyl4j.client.entities.PteroClient
+import dev.omnicron.bots.server_manager.commands.CommandListServers
 import dev.omnicron.bots.server_manager.commands.ICommand
 import dev.omnicron.bots.server_manager.util.ConfigException
 import dev.omnicron.bots.server_manager.util.debug
@@ -58,6 +59,8 @@ class ServerManager: ListenerAdapter() {
         if(dotenv["COMMAND_PREFIX"] != null) {
             COMMAND_PREFIX = dotenv["COMMAND_PREFIX"]
         }
+
+        commands.add(CommandListServers(pteroApi))
 
         jda.presence.activity = Activity.watching("over Minecraft servers!")
     }
