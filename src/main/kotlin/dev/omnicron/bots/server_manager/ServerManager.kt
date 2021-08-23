@@ -3,6 +3,7 @@ package dev.omnicron.bots.server_manager
 import com.mattmalec.pterodactyl4j.PteroBuilder
 import com.mattmalec.pterodactyl4j.client.entities.PteroClient
 import dev.omnicron.bots.server_manager.commands.CommandListServers
+import dev.omnicron.bots.server_manager.commands.CommandTest
 import dev.omnicron.bots.server_manager.commands.ICommand
 import dev.omnicron.bots.server_manager.util.ConfigException
 import dev.omnicron.bots.server_manager.util.debug
@@ -10,6 +11,7 @@ import io.github.cdimascio.dotenv.dotenv
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 
@@ -51,8 +53,7 @@ class ServerManager: ListenerAdapter() {
             servers.forEach { server -> debug("${server.name} -> ${server.node}") }
         }
 
-        debug("Validity verified.")
-        setup()
+
     }
 
     private fun setup() {
@@ -61,8 +62,14 @@ class ServerManager: ListenerAdapter() {
         }
 
         commands.add(CommandListServers(pteroApi))
+        commands.add(CommandTest())
 
         jda.presence.activity = Activity.watching("over Minecraft servers!")
+    }
+
+    override fun onReady(event: ReadyEvent) {
+        debug("Validity verified.")
+        setup()
     }
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
@@ -70,12 +77,10 @@ class ServerManager: ListenerAdapter() {
         if(message.contentRaw.startsWith(COMMAND_PREFIX)) {
             val commandPieces = message.contentRaw.split(" ")
             val commandName = commandPieces[0].replace(COMMAND_PREFIX, "")
-            val commandArgs = commandPieces.filter { part -> part.equals(commandPieces[0]) }
-            val command = commands.first { command -> command.getName().equals(commandName) }
+            val commandArgs = commandPieces.filter { part -> part != commandPieces[0] }
+            val command = commands.firstOrNull { command -> command.getName() == commandName }
 
-            if(command != null) {
-                command.run(commandArgs, message)
-            }
+            command?.run(commandArgs, message)
         }
     }
 }
