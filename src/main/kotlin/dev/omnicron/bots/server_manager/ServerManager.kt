@@ -3,6 +3,7 @@ package dev.omnicron.bots.server_manager
 import com.mattmalec.pterodactyl4j.PteroBuilder
 import com.mattmalec.pterodactyl4j.client.entities.PteroClient
 import dev.omnicron.bots.server_manager.commands.CommandListServers
+import dev.omnicron.bots.server_manager.commands.CommandRestartServer
 import dev.omnicron.bots.server_manager.commands.CommandTest
 import dev.omnicron.bots.server_manager.commands.ICommand
 import dev.omnicron.bots.server_manager.util.ConfigException
@@ -10,14 +11,20 @@ import dev.omnicron.bots.server_manager.util.debug
 import io.github.cdimascio.dotenv.dotenv
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 class ServerManager: ListenerAdapter() {
-    lateinit var token: String
     lateinit var jda: JDA
+
+    private lateinit var MC_ADMIN_ROLE_ID: String
+    private lateinit var MC_MOD_ROLE_ID: String
+
     private val dotenv = dotenv()
     private var COMMAND_PREFIX = "-"
     private var commands = ArrayList<ICommand>()
@@ -25,6 +32,7 @@ class ServerManager: ListenerAdapter() {
     private lateinit var pteroApi: PteroClient
 
     fun start() {
+
         debug("Please wait while I gather my bearings... Initializing now!")
         debug("Beginning system checks.")
         debug("Checking to see if I was given my ticket to Discord...")
@@ -41,7 +49,15 @@ class ServerManager: ListenerAdapter() {
             throw ConfigException("You must specify a PTERODACTYL_URL in your .env file")
         }
 
-        token = dotenv["BOT_TOKEN"]
+        if(dotenv["DISCORD_MC_ADMIN_ID"] != null) {
+            MC_ADMIN_ROLE_ID = dotenv["DISCORD_MC_ADMIN_ID"]
+        }
+
+        if(dotenv["DISCORD_MC_MOD_ID"] != null) {
+            MC_MOD_ROLE_ID = dotenv["DISCORD_MC_MOD_ID"]
+        }
+
+        val token: String = dotenv["BOT_TOKEN"]
 
         debug("Looks like I do have a ticket - but is it valid?")
 
@@ -63,6 +79,7 @@ class ServerManager: ListenerAdapter() {
 
         commands.add(CommandListServers(pteroApi))
         commands.add(CommandTest())
+        commands.add(CommandRestartServer(this, pteroApi))
 
         jda.presence.activity = Activity.watching("over Minecraft servers!")
     }
@@ -83,5 +100,52 @@ class ServerManager: ListenerAdapter() {
             command?.run(commandArgs, message)
         }
     }
+
+    fun hasPermissionType(message: Message, permissionType: MinecraftPermissionType): Boolean {
+        var moderatorRole: Role?
+        var administratorRole: Role?
+
+        if(message.guild.getMember(message.author)!!.hasPermission(Permission.ADMINISTRATOR)) {
+            return true
+        }
+
+        if(!MC_ADMIN_ROLE_ID.isNullOrEmpty()) {
+            message.guild.getRoleById(MC_ADMIN_ROLE_ID).let { role -> administratorRole = role }
+        } else {
+            administratorRole = null
+            debug("You haven't set an DISCORD_MC_ADMIN_ID in your .env file," +
+                    " permission check will fallback to whether the user has ADMINISTRATOR")
+        }
+
+        if(!MC_MOD_ROLE_ID.isNullOrEmpty()) {
+            message.guild.getRoleById(MC_MOD_ROLE_ID).let { role -> moderatorRole = role }
+        } else {
+            moderatorRole = null
+            debug("You haven't set an DISCORD_MC_MOD_ID in your .env file," +
+                    " permission check will fallback to whether the user has ADMINISTRATOR")
+        }
+
+        if(moderatorRole != null && administratorRole != null) {
+            if(permissionType == MinecraftPermissionType.MODERATOR) {
+                if(message.guild.getMember(message.author)!!.roles.contains(moderatorRole)
+                    || message.guild.getMember(message.author)!!.roles.contains(administratorRole)) {
+                    return true
+                }
+            }
+
+            if(permissionType == MinecraftPermissionType.ADMINISTRATOR) {
+                if(message.guild.getMember(message.author)!!.roles.contains(administratorRole)) {
+                    return true
+                }
+            }
+        }
+
+        return false
+    }
+
+    enum class MinecraftPermissionType {
+        MODERATOR, ADMINISTRATOR
+    }
+
 }
 
