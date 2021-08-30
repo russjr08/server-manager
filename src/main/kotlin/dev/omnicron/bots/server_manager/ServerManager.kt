@@ -8,7 +8,7 @@ import dev.omnicron.bots.server_manager.commands.CommandTest
 import dev.omnicron.bots.server_manager.commands.ICommand
 import dev.omnicron.bots.server_manager.util.ConfigException
 import dev.omnicron.bots.server_manager.util.debug
-import io.github.cdimascio.dotenv.dotenv
+import io.github.cdimascio.dotenv.Dotenv
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.Permission
@@ -25,13 +25,15 @@ class ServerManager: ListenerAdapter() {
     private lateinit var MC_ADMIN_ROLE_ID: String
     private lateinit var MC_MOD_ROLE_ID: String
 
-    private val dotenv = dotenv()
+    private lateinit var dotenv: Dotenv
     private var COMMAND_PREFIX = "-"
     private var commands = ArrayList<ICommand>()
 
     private lateinit var pteroApi: PteroClient
 
     fun start() {
+
+        dotenv = Dotenv.configure().directory("./data").load()
 
         debug("Please wait while I gather my bearings... Initializing now!")
         debug("Beginning system checks.")
