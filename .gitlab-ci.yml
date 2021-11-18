@@ -2,7 +2,6 @@ image: openjdk:16-alpine3.13
 
 stages:
   - build
-  - jar
   - deploy
 
 before_script:
@@ -21,7 +20,7 @@ build-via-gradle:
     - echo "Compilation tests completed!"
 
 create-jar:
-  stage: jar
+  stage: build
   script:
     - ./gradlew assemble
   artifacts:
