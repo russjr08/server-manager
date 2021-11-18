@@ -1,5 +1,8 @@
 image: openjdk:16-alpine3.13
 
+services:
+  - docker:19.03.13-dind
+
 stages:
   - build
   - deploy
