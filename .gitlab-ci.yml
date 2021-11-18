@@ -1,0 +1,40 @@
+image: openjdk:16-alpine3.13
+
+stages:
+  - build
+  - jar
+  - deploy
+
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+
+cache:
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+
+build-via-gradle:
+  stage: build
+  script:
+    - echo "Ensuring application is able to be compiled..."
+    - ./gradlew compileJava compileKotlin
+    - echo "Compilation tests completed!"
+
+create-jar:
+  stage: jar
+  script:
+    - ./gradlew assemble
+  artifacts:
+    paths:
+      - build/libs/*-all.jar
+
+deploy-to-docker:
+  only:
+    refs:
+      - main
+  stage: docker
+  before_script:
+    - echo "$DOCKER_REGISTRY_PASS" | docker login $DOCKER_REGISTRY --username $DOCKER_REGISTRY_USER --password-stdin
+  script:
+    - docker build server-manager .
+    - docker push

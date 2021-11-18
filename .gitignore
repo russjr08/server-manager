@@ -173,3 +173,7 @@ gradle-app.setting
 .project
 
 .settings/org.eclipse.buildship.core.prefs
+
+.idea/discord.xml
+
+.idea/misc.xml
