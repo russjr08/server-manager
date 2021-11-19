@@ -1,8 +1,5 @@
 image: openjdk:16-alpine3.13
 
-services:
-  - docker:19.03.13-dind
-
 stages:
   - build
   - deploy
@@ -35,8 +32,11 @@ deploy-to-docker:
     refs:
       - main
   stage: deploy
+  image: docker:latest
+  services:
+    - docker:dind
   before_script:
     - echo "$DOCKER_REGISTRY_PASS" | docker login $DOCKER_REGISTRY --username $DOCKER_REGISTRY_USER --password-stdin
   script:
-    - docker build server-manager .
-    - docker push
+    - docker build -t docker-registry.omnicron.dev/server-manager .
+    - docker push docker-registry.omnicron.dev/server-manager:latest
