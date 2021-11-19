@@ -177,3 +177,5 @@ gradle-app.setting
 .idea/discord.xml
 
 .idea/misc.xml
+
+.idea/runConfigurations.xml
