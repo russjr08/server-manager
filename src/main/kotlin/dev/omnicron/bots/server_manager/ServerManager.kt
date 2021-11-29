@@ -137,7 +137,7 @@ class ServerManager: ListenerAdapter() {
                     " permission check will fallback to whether the user has ADMINISTRATOR")
         }
 
-        if(MC_MOD_ROLE_ID.isEmpty()) {
+        if(MC_MOD_ROLE_ID.isNotEmpty()) {
             member.guild.getRoleById(MC_MOD_ROLE_ID).let { role -> moderatorRole = role }
         } else {
             moderatorRole = null
