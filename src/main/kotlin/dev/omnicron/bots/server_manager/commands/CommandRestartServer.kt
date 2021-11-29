@@ -15,7 +15,7 @@ class CommandRestartServer(private val manager: ServerManager, private val ptero
             return
         }
 
-        if(!manager.hasPermissionType(message, ServerManager.MinecraftPermissionType.MODERATOR)) {
+        if(!manager.hasPermissionType(message.member!!, ServerManager.PermissionType.MODERATOR)) {
             message.addReaction("❌").queue()
             message.reply("You do not have permission to run this command!").queue()
             return
