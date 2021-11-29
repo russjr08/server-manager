@@ -29,7 +29,7 @@ class CommandStopServer(private val manager: ServerManager, private val pteroApi
         }
 
         if(!manager.hasPermissionType(message.member!!, ServerManager.PermissionType.MODERATOR)
-            || !manager.hasPermissionType(message.member!!, ServerManager.PermissionType.ADMINISTRATOR)) {
+            && !manager.hasPermissionType(message.member!!, ServerManager.PermissionType.ADMINISTRATOR)) {
             Helpers.sendInvalidPermissionsEmbed(message)
             return
         }
@@ -98,17 +98,18 @@ class StopQueueItem(private val message: Message,
     var isCompleted = false
 
     override fun run(event: MessageReactionAddEvent) {
-
-        if(manager.hasPermissionType(event.member!!, ServerManager.PermissionType.ADMINISTRATOR)) {
-            confirmed(event)
-        } else if(manager.hasPermissionType(event.member!!, ServerManager.PermissionType.MODERATOR)) {
-            event.retrieveMessage().queue { message ->
-                if((message.reactions.size - 1) > 1) { // Remove one, as the bot's initial reaction will count here
-                    confirmed(event)
+        event.retrieveMessage().queue { messageFromEvent ->
+            if(manager.hasPermissionType(event.member!!, ServerManager.PermissionType.ADMINISTRATOR)) {
+                confirmed(event)
+            } else if(manager.hasPermissionType(event.member!!, ServerManager.PermissionType.MODERATOR)) {
+                event.retrieveMessage().queue { _ ->
+                    if((messageFromEvent.reactions.first().count - 1) > 1) { // Remove one, as the bot's initial reaction will count here
+                        confirmed(event)
+                    }
                 }
+            } else {
+                event.reaction.removeReaction(event.user!!)
             }
-        } else {
-            event.reaction.removeReaction(event.user!!)
         }
     }
 
