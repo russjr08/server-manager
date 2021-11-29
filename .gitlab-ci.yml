@@ -22,10 +22,10 @@ build-via-gradle:
 create-jar:
   stage: build
   script:
-    - ./gradlew assemble
+    - ./gradlew shadowJar
   artifacts:
     paths:
-      - build/libs/*-all.jar
+      - build/libs/*.jar
 
 deploy-to-docker:
   only:

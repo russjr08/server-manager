@@ -19,8 +19,6 @@ repositories {
     }
 }
 
-
-
 compileKotlin {
     kotlinOptions.jvmTarget = '11'
 }
@@ -35,7 +33,7 @@ application {
 
 jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
+    baseName "Test"
     manifest {
         attributes(
                 'Main-Class': 'MainKt',
@@ -44,6 +42,15 @@ jar {
     }
 
     from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
+shadowJar {
+    baseName = 'Server-Manager'
+    classifier = ''
+    archiveVersion = ''
+    mainClassName = 'MainKt'
+
+    mergeServiceFiles()
 }
 
 dependencies {
