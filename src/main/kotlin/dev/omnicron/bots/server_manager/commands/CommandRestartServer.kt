@@ -1,8 +1,13 @@
 package dev.omnicron.bots.server_manager.commands
 
+import com.mattmalec.pterodactyl4j.PteroAction
+import com.mattmalec.pterodactyl4j.client.entities.ClientServer
 import com.mattmalec.pterodactyl4j.client.entities.PteroClient
+import dev.omnicron.bots.server_manager.ReactionQueueItem
 import dev.omnicron.bots.server_manager.ServerManager
+import dev.omnicron.bots.server_manager.ServerQueueAction
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 
 class CommandRestartServer(private val manager: ServerManager, private val pteroApi: PteroClient): ICommand {
 
@@ -37,6 +42,40 @@ class CommandRestartServer(private val manager: ServerManager, private val ptero
             }
         }
 
+    }
+
+}
+
+class RestartQueueItem(private val message: Message,
+                       private val manager: ServerManager,
+                       private val action: ServerQueueAction<PteroAction<Void>, ClientServer>,
+                       private val done: (item: StopQueueItem) -> Unit): ReactionQueueItem<PteroAction<Void>, ClientServer> {
+
+    override fun run(event: MessageReactionAddEvent) {
+        TODO("Not yet implemented")
+    }
+
+    override fun isFor(): Message {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAction(): ServerQueueAction<PteroAction<Void>, ClientServer> {
+        TODO("Not yet implemented")
+    }
+
+    override fun onCancelled() {
+        TODO("Not yet implemented")
+    }
+
+}
+
+class RestartAction: ServerQueueAction<PteroAction<Void>, ClientServer> {
+    override fun performOnServer(): PteroAction<Void> {
+        TODO("Not yet implemented")
+    }
+
+    override fun actingUpon(): ClientServer {
+        TODO("Not yet implemented")
     }
 
 }
