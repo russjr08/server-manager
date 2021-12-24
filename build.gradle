@@ -1,6 +1,6 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.5.21'
-    id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'com.github.johnrengelman.shadow' version '7.1.1'
     id 'application'
 }
 
@@ -37,7 +37,7 @@ jar {
     manifest {
         attributes(
                 'Main-Class': 'MainKt',
-                'Implementation-Version': version
+                'Implementation-Version': archiveVersion
         )
     }
 
@@ -46,7 +46,6 @@ jar {
 
 shadowJar {
     baseName = 'Server-Manager'
-    classifier = ''
     archiveVersion = ''
     mainClassName = 'MainKt'
 
@@ -54,11 +53,11 @@ shadowJar {
 }
 
 dependencies {
-    implementation('net.dv8tion:JDA:4.3.0_277') {
+    implementation('net.dv8tion:JDA:4.4.0_352') {
         exclude module: 'opus-java'
     }
 
-    implementation 'com.mattmalec:Pterodactyl4J:2.BETA_64'
+    implementation 'com.mattmalec:Pterodactyl4J:2.BETA_81'
     implementation 'io.github.cdimascio:dotenv-kotlin:6.2.2'
 }
 
