@@ -51,7 +51,7 @@ class CommandStopServer(private val manager: ServerManager, private val pteroApi
                         .setDescription("An action is already pending for ${server.name}, please wait for this " +
                                 "action to either be completed, or expire.")
                         .build()
-                    message.channel.sendMessage(embed).queue {
+                    message.channel.sendMessageEmbeds(embed).queue {
                         it.addReaction("❌").queue()
                     }
                 }
@@ -120,7 +120,7 @@ class StopQueueItem(private val message: Message,
             done(this)
             event.retrieveMessage().queue { message ->
                 if(message.embeds.size > -1) {
-                    message.editMessage(Helpers.getActionConfirmationEmbed(action.actingUpon().name,
+                    message.editMessageEmbeds(Helpers.getActionConfirmationEmbed(action.actingUpon().name,
                         "Stop Server", ActionTypeResult.CONFIRMED, false)).queue()
                 }
             }
@@ -134,7 +134,7 @@ class StopQueueItem(private val message: Message,
             "Stop Server", ActionTypeResult.FAILED, false)
 
         // Update the message in Discord to notify that this task has expired/failed, then unsubscribe
-        message.editMessage(embed).queue {
+        message.editMessageEmbeds(embed).queue {
             message.clearReactions().queue() {
                 message.addReaction("❌").queue()
                 isCompleted = true
