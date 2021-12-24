@@ -18,7 +18,7 @@ class Helpers {
                     .setFooter(getFooterContent(), getLogoLink())
                     .build()
 
-                message.channel.sendMessage(embed).queue()
+                message.channel.sendMessageEmbeds(embed).queue()
                 return false
             }
             return true
@@ -41,7 +41,7 @@ class Helpers {
                 .setFooter(getFooterContent(), getLogoLink())
                 .build()
             message.addReaction("❌").queue()
-            message.channel.sendMessage(embed).queue()
+            message.channel.sendMessageEmbeds(embed).queue()
 
         }
 
@@ -53,7 +53,7 @@ class Helpers {
                 .setFooter(getFooterContent(), getLogoLink())
                 .build()
             message.addReaction("❌").queue()
-            message.channel.sendMessage(embed).queue()
+            message.channel.sendMessageEmbeds(embed).queue()
         }
 
         fun sendTooManyServersMatchedEmbed(message: Message) {
@@ -64,7 +64,7 @@ class Helpers {
                 .setFooter(getFooterContent(), getLogoLink())
                 .build()
             message.addReaction("❌").queue()
-            message.channel.sendMessage(embed).queue()
+            message.channel.sendMessageEmbeds(embed).queue()
         }
 
         fun getActionConfirmationEmbed(actingUpon: String, actionType: String, result: ActionTypeResult,

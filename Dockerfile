@@ -13,4 +13,4 @@ CMD ["./gradlew", "shadowJar"]
 
 COPY build/libs .
 
-CMD ["java", "-jar", "Server-Manager.jar"]
+CMD ["java", "-jar", "Server-Manager-all.jar"]

@@ -145,7 +145,7 @@ class StopQueueItem(private val message: Message,
             "Stop Server", ActionTypeResult.FAILED, false)
 
         // Update the message in Discord to notify that this task has expired/failed, then unsubscribe
-        message.editMessage(embed).queue {
+        message.editMessageEmbeds(embed).queue {
             message.clearReactions().queue() {
                 message.addReaction("❌").queue()
                 isCompleted = true

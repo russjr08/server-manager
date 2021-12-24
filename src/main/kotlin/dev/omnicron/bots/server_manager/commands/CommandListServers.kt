@@ -37,7 +37,7 @@ class CommandListServers(private val pteroApi: PteroClient): ICommand {
 
             embedBuilder.setFooter("ServerManager - Russell Richardson")
 
-            message.channel.sendMessage(embedBuilder.build()).queue()
+            message.channel.sendMessageEmbeds(embedBuilder.build()).queue()
         }
     }
 }
