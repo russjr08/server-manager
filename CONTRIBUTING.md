@@ -62,3 +62,5 @@ However, in order to contribute, you must agree to the following conditions:
 - To resign this Agreement, follow the same instructions as `How To Sign This Agreement` however do **NOT** edit your existing signature, rather ammend it at the end of the list.
 
 ## CONTRIBUTORS
+Russell Richardson \<admin@russ.network> 12/25/21 04:05AM GMT
+Russell Richardson \<Russell@KronosAD.com> 12/25/21 04:05AM GMT
