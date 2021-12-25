@@ -1,6 +1,7 @@
 Contributor License Agreement (also known as the CLA)
 
 **EFFECTIVE AS OF 12/25/21 04:00 AM GMT**
+
 **LAST UPDATED AT 12/25/21 04:25 AM GMT**
 
 Server Manager and any subprojects, if any, is completely Open Source (under the GPLv2 license) - as such, contributions are always welcome!
@@ -40,6 +41,7 @@ However, in order to contribute, you must agree to the following conditions:
 - You are allowed to contribute to the Contributor License Agreement, so long as update the `LAST UPDATED AT` time at the top of this agreement AND you must resign the agreement with a timestamp at or after the new `LAST UPDATED AT` time.
   - However, you must act in "good faith" to make any additional/modified terms "reasonable" to future contributors.
     - "Reasonable" is at the discretion of a Project Lead.
+  - A commit that contains a revision to the CLA should be signed off.
 
 ### Project Leads
 
@@ -53,7 +55,7 @@ However, in order to contribute, you must agree to the following conditions:
     - The same applies to your email address, but it's preferred (however not strictly required) to use an email address that you can be reached at if needed.
   - If you switch the name or email address that you commit with, you must resign this agreement with your new details before any further Merge Requests will be merged.
   - Example: Russell Richardson \<admin@russ.network> - 12/25/21 04:00AM GMT
-    - Use a `\\` to escape the `<>`'s in your email address, like so:
+    - Use a \ to escape the `<>`'s in your email address, like so:
       - `\<admin@russ.network>`
 - Then, you are required to sign-off your commit that contains your addition to the the `CONTRIBUTORS` list.
   - Use `git commit --signoff` to do this
@@ -62,6 +64,6 @@ However, in order to contribute, you must agree to the following conditions:
 - To resign this Agreement, follow the same instructions as `How To Sign This Agreement` and **update** your current entry.
 
 ## CONTRIBUTORS
-Russell Richardson \<admin@russ.network> 12/25/21 04:25AM GMT
+Russell Richardson \<admin@russ.network> 12/25/21 04:30AM GMT
 
-Russell Richardson \<Russell@KronosAD.com> 12/25/21 04:25AM GMT
+Russell Richardson \<Russell@KronosAD.com> 12/25/21 04:30AM GMT
