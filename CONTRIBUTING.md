@@ -53,7 +53,7 @@ However, in order to contribute, you must agree to the following conditions:
     - The same applies to your email address, but it's preferred (however not strictly required) to use an email address that you can be reached at if needed.
   - If you switch the name or email address that you commit with, you must resign this agreement with your new details before any further Merge Requests will be merged.
   - Example: Russell Richardson \<admin@russ.network> - 12/25/21 04:00AM GMT
-    - Use a `\` to escape the `<>`'s in your email address, like so:
+    - Use a `\\` to escape the `<>`'s in your email address, like so:
       - `\<admin@russ.network>`
 - Then, you are required to sign-off your commit that contains your addition to the the `CONTRIBUTORS` list.
   - Use `git commit --signoff` to do this
