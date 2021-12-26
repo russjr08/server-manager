@@ -1,5 +1,6 @@
 package dev.omnicron.bots.server_manager
 
+import com.mattmalec.pterodactyl4j.client.entities.ClientServer
 import dev.omnicron.bots.server_manager.util.ActionTypeResult
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
@@ -65,6 +66,20 @@ class Helpers {
                 .build()
             message.addReaction("❌").queue()
             message.channel.sendMessageEmbeds(embed).queue()
+        }
+
+        fun sendActionAlreadyPendingEmbed(message: Message, server: ClientServer) {
+            val embed = EmbedBuilder()
+                .setTitle("Unable To Comply")
+                .setColor(Color.RED)
+                .setFooter(dev.omnicron.bots.server_manager.Helpers.getFooterContent())
+                .setDescription("An action is already pending for ${server.name}, please wait for this " +
+                        "action to either be completed, or expire.")
+                .build()
+
+            message.channel.sendMessageEmbeds(embed).queue {
+                it.addReaction("❌").queue()
+            }
         }
 
         fun getActionConfirmationEmbed(actingUpon: String, actionType: String, result: ActionTypeResult,
