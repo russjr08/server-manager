@@ -33,29 +33,31 @@ class CommandStopServer(private val manager: ServerManager, private val pteroApi
             Helpers.sendInvalidPermissionsEmbed(message)
             return
         }
+        val name = args.joinToString(" ")
+        pteroApi.retrieveServersByName(name, false).executeAsync { servers ->
+            val server: ClientServer
 
-        pteroApi.retrieveServersByName(args.joinToString(" "), false).executeAsync { servers ->
             if(servers.size == 0) {
                 Helpers.sendServersNotFoundEmbed(message)
+                return@executeAsync
             } else if(servers.size > 1) {
-                Helpers.sendTooManyServersMatchedEmbed(message)
-            } else if(servers.size == 1) {
-                val server = servers.first()
-                if(!manager.checkIfQueueActionExistsForServer(server)) {
-                    buildStopAction(message, server)
+                val matched = servers.find { it -> it.name == name }
+                if(matched != null) {
+                    server = matched
                 } else {
-                    val embed = EmbedBuilder()
-                        .setTitle("Unable To Comply")
-                        .setColor(Color.RED)
-                        .setFooter(Helpers.getFooterContent())
-                        .setDescription("An action is already pending for ${server.name}, please wait for this " +
-                                "action to either be completed, or expire.")
-                        .build()
-                    message.channel.sendMessageEmbeds(embed).queue {
-                        it.addReaction("❌").queue()
-                    }
+                    Helpers.sendTooManyServersMatchedEmbed(message)
+                    return@executeAsync
                 }
+            } else {
+                server = servers.first()
             }
+
+            if(!manager.checkIfQueueActionExistsForServer(server)) {
+                buildStopAction(message, server)
+            } else {
+                Helpers.sendActionAlreadyPendingEmbed(message, server)
+            }
+
         }
     }
 
@@ -68,7 +70,7 @@ class CommandStopServer(private val manager: ServerManager, private val pteroApi
 
         } else if(manager.hasPermissionType(message.member!!, ServerManager.PermissionType.MODERATOR)) {
             val embed = Helpers.getActionConfirmationEmbed(server.name, "Stop Server",
-                ActionTypeResult.PENDING, true)
+                ActionTypeResult.PENDING, true, 3)
             sendStopAction(message, embed, server)
         }
     }
@@ -76,7 +78,7 @@ class CommandStopServer(private val manager: ServerManager, private val pteroApi
     private fun sendStopAction(message: Message, embed: MessageEmbed, server: ClientServer) {
         var action: StopQueueItem
 
-        message.channel.sendMessage(embed).queue { originalMessage ->
+        message.channel.sendMessageEmbeds(embed).queue { originalMessage ->
             originalMessage.addReaction("✅").queue()
             action = StopQueueItem(originalMessage, manager, StopServerAction(server)) { queueItem ->
                 manager.unSubscribeToReactions(queueItem)
@@ -119,8 +121,8 @@ class StopQueueItem(private val message: Message,
             message.reply("${this.action.actingUpon().name} has been stopped!").queue()
             done(this)
             event.retrieveMessage().queue { message ->
-                if(message.embeds.size > -1) {
-                    message.editMessageEmbeds(Helpers.getActionConfirmationEmbed(action.actingUpon().name,
+                if(message.embeds.size >= 1) {
+                    message.editMessage(Helpers.getActionConfirmationEmbed(action.actingUpon().name,
                         "Stop Server", ActionTypeResult.CONFIRMED, false)).queue()
                 }
             }

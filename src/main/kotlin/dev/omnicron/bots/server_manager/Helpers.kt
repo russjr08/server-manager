@@ -1,5 +1,6 @@
 package dev.omnicron.bots.server_manager
 
+import com.mattmalec.pterodactyl4j.client.entities.ClientServer
 import dev.omnicron.bots.server_manager.util.ActionTypeResult
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
@@ -67,8 +68,22 @@ class Helpers {
             message.channel.sendMessageEmbeds(embed).queue()
         }
 
+        fun sendActionAlreadyPendingEmbed(message: Message, server: ClientServer) {
+            val embed = EmbedBuilder()
+                .setTitle("Unable To Comply")
+                .setColor(Color.RED)
+                .setFooter(dev.omnicron.bots.server_manager.Helpers.getFooterContent())
+                .setDescription("An action is already pending for ${server.name}, please wait for this " +
+                        "action to either be completed, or expire.")
+                .build()
+
+            message.channel.sendMessageEmbeds(embed).queue {
+                it.addReaction("❌").queue()
+            }
+        }
+
         fun getActionConfirmationEmbed(actingUpon: String, actionType: String, result: ActionTypeResult,
-                                       requiresMultiple: Boolean = false): MessageEmbed {
+                                       requiresMultiple: Boolean = false, requiredCount: Int = 2): MessageEmbed {
             val descriptionBuilder = StringBuilder()
             descriptionBuilder.append("Running this command requires confirmation, " +
                     "please react to my reaction to confirm within 20 seconds.\n\n")
@@ -81,7 +96,8 @@ class Helpers {
 
             if (requiresMultiple) {
                 descriptionBuilder.append(
-                    "Note: Moderators - this requires at least two moderators to confirm. " +
+                    "Note: Moderators - this requires at least $requiredCount ${pluralize("moderator", 
+                        requiredCount)} to confirm. " +
                             "An Administrator can also react to override the need for multiple confirmations.\n\n"
                 )
             }
@@ -101,6 +117,14 @@ class Helpers {
         }
 
         fun getLogoLink(): String = "https://i.russ.network/static/server-manager-logo.png"
+
+        fun pluralize(word: String, size: Int): String {
+            return if(size == 0 || size > 1) {
+                word + "s"
+            } else {
+                word
+            }
+        }
     }
 
 }
