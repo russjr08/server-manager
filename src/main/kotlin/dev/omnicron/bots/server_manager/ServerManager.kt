@@ -4,7 +4,9 @@ import com.mattmalec.pterodactyl4j.PteroAction
 import com.mattmalec.pterodactyl4j.PteroBuilder
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer
 import com.mattmalec.pterodactyl4j.client.entities.PteroClient
+import dev.omnicron.bots.server_manager.buttons.ButtonRestartServer
 import dev.omnicron.bots.server_manager.commands.*
+import dev.omnicron.bots.server_manager.buttons.IMessageButton
 import dev.omnicron.bots.server_manager.util.ConfigException
 import dev.omnicron.bots.server_manager.util.debug
 import io.github.cdimascio.dotenv.Dotenv
@@ -15,6 +17,7 @@ import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.events.ReadyEvent
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -28,6 +31,7 @@ class ServerManager: ListenerAdapter() {
     private lateinit var dotenv: Dotenv
     private var COMMAND_PREFIX = "-"
     private var commands = ArrayList<ICommand>()
+    private var invokableActions = ArrayList<IMessageButton>()
     private val reactionQueueItems = ArrayList<ReactionQueueItem<PteroAction<Void>, ClientServer>>()
     private lateinit var pteroApi: PteroClient
 
@@ -83,6 +87,9 @@ class ServerManager: ListenerAdapter() {
         commands.add(CommandTest())
         commands.add(CommandRestartServer(this, pteroApi))
         commands.add(CommandStopServer(this, pteroApi))
+        commands.add(CommandInvokeServer(this, pteroApi))
+
+        invokableActions.add(ButtonRestartServer())
 
         jda.presence.activity = Activity.watching("over Minecraft servers!")
     }
@@ -120,6 +127,17 @@ class ServerManager: ListenerAdapter() {
             command?.run(commandArgs, message)
         }
     }
+
+    override fun onButtonClick(event: ButtonClickEvent) {
+        event.deferEdit().queue()
+        invokableActions.first { it.getName() == event.button?.label }.onButtonClicked(event)
+    }
+
+    fun addInvokableAction(button: IMessageButton) {
+        invokableActions.add(button)
+    }
+
+    fun getInvokableActions(): ArrayList<IMessageButton> = invokableActions
 
     fun hasPermissionType(member: Member, permissionType: PermissionType): Boolean {
         var moderatorRole: Role?
