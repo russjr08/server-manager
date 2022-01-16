@@ -18,6 +18,8 @@ import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import java.io.File
+import kotlin.system.exitProcess
 
 class ServerManager: ListenerAdapter() {
     lateinit var jda: JDA
@@ -32,6 +34,12 @@ class ServerManager: ListenerAdapter() {
     private lateinit var pteroApi: PteroClient
 
     fun start() {
+        val envFileExists = File("data/.env").exists()
+
+        if(!envFileExists) {
+            System.err.println("Oh dear... You do not have a configuration file! This should be in '/data/.env'")
+            exitProcess(1)
+        }
 
         dotenv = Dotenv.configure().directory("./data").load()
 
@@ -105,7 +113,8 @@ class ServerManager: ListenerAdapter() {
     }
 
     override fun onReady(event: ReadyEvent) {
-        debug("Validity verified.")
+        debug("Validity verified. Connected to Discord as " +
+                "${event.jda.selfUser.name}#${event.jda.selfUser.discriminator}!")
         setup()
     }
 
@@ -168,7 +177,7 @@ class ServerManager: ListenerAdapter() {
             return
         }
 
-        reactionQueueItems.stream().filter { it -> it.isFor().id == event.messageId }.findFirst().ifPresent() { item ->
+        reactionQueueItems.stream().filter { it.isFor().id == event.messageId }.findFirst().ifPresent() { item ->
             item.run(event)
         }
     }
