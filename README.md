@@ -79,3 +79,5 @@ Server Manager should then list all the servers you have access to at startup
 
 Feel free to reach out to me on Discord for any questions you might have, either via DM `@russjr08#5539`
 or you can join my Discord via [this link](https://discord.gg/ctzU9mYg6a) in the #development-feedback channel.
+
+If use Matrix, you can also reach out to me on Matrix by DM'ing `@russ:russ.network` as well.
