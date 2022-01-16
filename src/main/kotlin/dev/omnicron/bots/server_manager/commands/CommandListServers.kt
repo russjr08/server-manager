@@ -20,7 +20,7 @@ class CommandListServers(private val pteroApi: PteroClient): ICommand {
             val emoteStarted = "☑"
             val emoteInProgress = "🔄"
             val emoteStopped = "❌"
-            var currentEmote = emoteInProgress
+            var currentEmote: String
 
             servers.forEach { server ->
                 val utilization = server.retrieveUtilization().execute()

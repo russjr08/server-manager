@@ -8,6 +8,7 @@ import dev.omnicron.bots.server_manager.ReactionQueueItem
 import dev.omnicron.bots.server_manager.ServerManager
 import dev.omnicron.bots.server_manager.ServerQueueAction
 import dev.omnicron.bots.server_manager.util.ActionTypeResult
+import dev.omnicron.bots.server_manager.util.Constants
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
@@ -19,7 +20,7 @@ class CommandRestartServer(private val manager: ServerManager, private val ptero
 
     override fun run(args: List<String>, message: Message) {
         /** If author of the message is a moderator instead of an administrator,
-         *  require at least three moderators to confirm via a reaction
+         *  require at least two moderators to confirm via a reaction
          */
 
         if(!Helpers.checkArguments(1, message, args)) {
@@ -63,6 +64,11 @@ class CommandRestartServer(private val manager: ServerManager, private val ptero
     }
 
     private fun buildRestartAction(message: Message, server: ClientServer) {
+        var requiredModerators = 2
+        if(manager.getConfig()[Constants.CONFIG_MODS_REQUIRED_FOR_RESTART] !== null) {
+            requiredModerators = Integer.valueOf(manager.getConfig()[Constants.CONFIG_MODS_REQUIRED_FOR_RESTART])
+        }
+
         if(manager.hasPermissionType(message.member!!, ServerManager.PermissionType.ADMINISTRATOR)) {
             val embed = Helpers.getActionConfirmationEmbed(server.name, "Restart Server",
                 ActionTypeResult.PENDING, false)
@@ -70,7 +76,7 @@ class CommandRestartServer(private val manager: ServerManager, private val ptero
 
         } else if(manager.hasPermissionType(message.member!!, ServerManager.PermissionType.MODERATOR)) {
             val embed = Helpers.getActionConfirmationEmbed(server.name, "Restart Server",
-                ActionTypeResult.PENDING, true)
+                ActionTypeResult.PENDING, true, requiredModerators)
             sendRestartAction(message, embed, server)
         }
     }

@@ -52,6 +52,10 @@ PTERODACTYL_API_KEY=API_KEY
 
 DISCORD_MC_MOD_ID=MOD_ROLE_ID_IN_DISCORD
 DISCORD_MC_ADMIN_ID=ADMIN_ROLE_ID_IN_DISCORD
+
+# Optional settings, values defined here are default
+REQUIRED_MODERATORS_FOR_RESTART=2
+REQUIRED_MODERATORS_FOR_STOP=3
 ```
 
 Here's a breakdown of those variables:
@@ -71,6 +75,10 @@ IP whitelist, please don't forget to whitelist the IP from which you're running 
 `DISCORD_MC_MOD_ID` / `DISCORD_MC_ADMIN_ID` - These will be the IDs of the Roles you create in Discord for
 Administrators and Moderators. To get these, enable developer mode in Discord's settings, then go to
 `Server Settings -> Roles` and right-click the respective role, and click `Copy ID`.
+
+`REQUIRED_MODERATORS_FOR_RESTART` - The amount of moderators required to confirm a restart action.
+
+`REQUIRED_MODERATORS_FOR_STOP` - The amount of moderators required to confirm a stop action.
 
 Server Manager should then list all the servers you have access to at startup 
 (note that due to the Pterodactyl API it will only pick up servers that are _owned_ by you).

@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import org.jetbrains.annotations.NotNull
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -129,6 +130,9 @@ class ServerManager: ListenerAdapter() {
             command?.run(commandArgs, message)
         }
     }
+    
+    @NotNull // Configuration should never be null, as the application exits when it is found.
+    fun getConfig() = this.dotenv
 
     fun hasPermissionType(member: Member, permissionType: PermissionType): Boolean {
         var moderatorRole: Role?

@@ -8,11 +8,10 @@ import dev.omnicron.bots.server_manager.ReactionQueueItem
 import dev.omnicron.bots.server_manager.ServerManager
 import dev.omnicron.bots.server_manager.ServerQueueAction
 import dev.omnicron.bots.server_manager.util.ActionTypeResult
-import net.dv8tion.jda.api.EmbedBuilder
+import dev.omnicron.bots.server_manager.util.Constants
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
-import java.awt.Color
 import kotlin.concurrent.schedule
 
 class CommandStopServer(private val manager: ServerManager, private val pteroApi: PteroClient): ICommand {
@@ -21,7 +20,7 @@ class CommandStopServer(private val manager: ServerManager, private val pteroApi
 
     override fun run(args: List<String>, message: Message) {
         /** If author of the message is a moderator instead of an administrator,
-         *  require at least two moderators to confirm via a reaction
+         *  require at least three moderators to confirm via a reaction
          */
 
         if(!Helpers.checkArguments(1, message, args)) {
@@ -62,6 +61,10 @@ class CommandStopServer(private val manager: ServerManager, private val pteroApi
     }
 
     private fun buildStopAction(message: Message, server: ClientServer) {
+        var requiredModerators = 3
+        if(manager.getConfig()[Constants.CONFIG_MODS_REQUIRED_FOR_STOP] !== null) {
+            requiredModerators = Integer.valueOf(manager.getConfig()[Constants.CONFIG_MODS_REQUIRED_FOR_STOP])
+        }
 
         if(manager.hasPermissionType(message.member!!, ServerManager.PermissionType.ADMINISTRATOR)) {
             val embed = Helpers.getActionConfirmationEmbed(server.name, "Stop Server",
@@ -70,7 +73,7 @@ class CommandStopServer(private val manager: ServerManager, private val pteroApi
 
         } else if(manager.hasPermissionType(message.member!!, ServerManager.PermissionType.MODERATOR)) {
             val embed = Helpers.getActionConfirmationEmbed(server.name, "Stop Server",
-                ActionTypeResult.PENDING, true, 3)
+                ActionTypeResult.PENDING, true, requiredModerators)
             sendStopAction(message, embed, server)
         }
     }
@@ -122,7 +125,7 @@ class StopQueueItem(private val message: Message,
             done(this)
             event.retrieveMessage().queue { message ->
                 if(message.embeds.size >= 1) {
-                    message.editMessage(Helpers.getActionConfirmationEmbed(action.actingUpon().name,
+                    message.editMessageEmbeds(Helpers.getActionConfirmationEmbed(action.actingUpon().name,
                         "Stop Server", ActionTypeResult.CONFIRMED, false)).queue()
                 }
             }
