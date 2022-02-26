@@ -9,6 +9,6 @@ COPY gradlew build.gradle gradle.properties settings.gradle ./
 
 COPY src ./src
 
-RUN ["./gradlew", "shadowJar"]
+RUN ["./gradlew", "--no-daemon", "shadowJar"]
 
 CMD ["java", "-jar", "./build/libs/Server-Manager-all.jar"]

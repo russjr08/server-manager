@@ -1,8 +1,5 @@
 image: openjdk:16-alpine3.13
 
-variables:
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-
 stages:
   - build
   - deploy
@@ -30,7 +27,7 @@ create-jar:
     paths:
       - build/libs/*.jar
 
-deploy-to-docker:
+deploy-to-internal:
   only:
     refs:
       - main
@@ -39,7 +36,24 @@ deploy-to-docker:
   services:
     - docker:dind
   before_script:
-    - echo "$DOCKER_REGISTRY_PASS" | docker login $DOCKER_REGISTRY --username $DOCKER_REGISTRY_USER --password-stdin
+    - echo "$DOCKER_INTERNAL_REGISTRY_PASS" | docker login $DOCKER_INTERNAL_REGISTRY --username $DOCKER_INTERNAL_REGISTRY_USER --password-stdin
   script:
     - docker build -t docker-registry.omnicron.dev/server-manager .
     - docker push docker-registry.omnicron.dev/server-manager:latest
+    - docker push docker-registry.omnicron.dev/server-manager:v1
+
+deploy-to-dockerhub:
+  only:
+    refs:
+      - main
+  stage: deploy
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - echo "$DOCKER_HUB_ACCESS_TOKEN" | docker login $DOCKER_HUB_IMAGE --username $DOCKER_HUB_USERNAME --password-stdin
+  script:
+    - docker build -t $DOCKER_HUB_IMAGE .
+    - docker push $DOCKER_HUB_IMAGE:latest
+    - docker push $DOCKER_HUB_IMAGE:v1
+    - docker push $DOCKER_HUB_IMAGE:$CI_COMMIT_SHA

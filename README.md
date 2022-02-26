@@ -36,9 +36,12 @@ Actions are "invoked" by a user, as such, an invocation is simply a user request
 There are two ways to obtain Server Manager at the moment:
 
 - Each commit (whether on the main branch or another) triggers a CI build on my [GitLab instance](https://git.russ.network/russjr08/server-manager/-/jobs) and look for the `main` branch's latest `create-jar` build, and select the download icon - this will download a zip file that contains the JAR in it. Note, you'll need Java 16 or higher to run it! 
-- You can use the docker image, found currently on my own Docker registry `docker-registry.omnicron.dev/server-manager:latest`
+- You can use the docker image, found currently on DockerHub such as `russjr08/server-manager:latest`
+  - Docker images have multiple tags to allow you to target whichever version you'd like!
+    - Latest: `russjr08/server-manager:latest`
+    - Latest v1: `russjr08/server-manager:v1`
 
-_Note: Server Manager will probably be published on DockerHub with named releases once it's further in development._
+Since Server Manager is still in active development, there all versions right now are classified "v1", to see all images available, head over to [DockerHub](https://hub.docker.com/r/russjr08/server-manager).
 
 ### Configuring Server Manager
 
