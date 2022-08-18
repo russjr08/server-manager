@@ -1,17 +1,22 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.6.10'
+    id 'org.jetbrains.kotlin.jvm' version '1.7.10'
     id 'com.github.johnrengelman.shadow' version '7.1.1'
     id 'application'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.10'
 }
 
 group = 'dev.omnicron.bots'
-version = '1.1-BETA'
+version = '2.0-BETA'
 
 repositories {
     mavenCentral()
     maven {
         name 'm2-dv8tion'
         url 'https://m2.dv8tion.net/releases'
+    }
+
+    maven {
+        url "https://m2.chew.pro/releases"
     }
 
     maven {
@@ -57,8 +62,12 @@ dependencies {
         exclude module: 'opus-java'
     }
 
+    implementation 'pw.chew:jda-chewtils:1.24.1'
+
     implementation 'com.mattmalec:Pterodactyl4J:2.BETA_81'
-    implementation 'io.github.cdimascio:dotenv-kotlin:6.2.2'
+    implementation 'io.github.cdimascio:dotenv-kotlin:6.3.1'
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.36'
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0-RC"
 }
 
 task stage(dependsOn: ['build', 'clean']) {

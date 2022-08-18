@@ -1,5 +1,6 @@
 package dev.omnicron.bots.server_manager
 
+import com.jagrosh.jdautilities.command.CommandClientBuilder
 import com.mattmalec.pterodactyl4j.PteroAction
 import com.mattmalec.pterodactyl4j.PteroBuilder
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer
@@ -52,34 +53,64 @@ class ServerManager: ListenerAdapter() {
             throw ConfigException("You must specify a BOT_TOKEN in your .env file")
         }
 
-        if(dotenv["PTERODACTYL_API_KEY"] == null) {
-            throw ConfigException("You must specify a PTERODACTYL_API_KEY in your .env file")
+        if(dotenv["PTERODACTYL_API_KEY"] != null) {
+//            throw ConfigException("You must specify a PTERODACTYL_API_KEY in your .env file")
+            debug("You have a PTERODACTYL_API_KEY defined in your .env file, this setting has now been" +
+                    " deprecated and can be safely removed.")
         }
 
-        if(dotenv["PTERODACTYL_URL"] == null) {
-            throw ConfigException("You must specify a PTERODACTYL_URL in your .env file")
+        if(dotenv["PTERODACTYL_URL"] != null) {
+//            throw ConfigException("You must specify a PTERODACTYL_URL in your .env file")
+            debug("You have a PTERODACTYL_URL defined in your .env file, this setting has now been" +
+                    " deprecated and can be safely removed.")
+        }
+
+        if(dotenv["DISCORD_OWNER_ID"] == null) {
+            throw ConfigException("You must specify a DISCORD_OWNER_ID in your .env file")
         }
 
         if(dotenv["DISCORD_MC_ADMIN_ID"] != null) {
             MC_ADMIN_ROLE_ID = dotenv["DISCORD_MC_ADMIN_ID"]
+            debug("You have a DISCORD_MC_ADMIN_ID defined in your .env file, this setting has now been" +
+                    " deprecated and can be safely removed.")
         }
 
         if(dotenv["DISCORD_MC_MOD_ID"] != null) {
             MC_MOD_ROLE_ID = dotenv["DISCORD_MC_MOD_ID"]
+            debug("You have a DISCORD_MC_MOD_ID defined in your .env file, this setting has now been" +
+                    " deprecated and can be safely removed.")
+        }
+
+        if(dotenv["VERBOSE_LOGGING"] != null) {
+            debug("Verbose logging has been enabled! Remove 'VERBOSE_LOGGING' from your .env file to disable!")
         }
 
         val token: String = dotenv["BOT_TOKEN"]
 
         debug("Looks like I do have a ticket - but is it valid?")
 
-        jda = JDABuilder.createDefault(token).addEventListeners(this).build()
+        val commandClientBuilder = CommandClientBuilder()
+        commandClientBuilder.addSlashCommand(ServerConfigCommand())
+        commandClientBuilder.setOwnerId(dotenv["DISCORD_OWNER_ID"])
+
+        // A bit silly, but this overrides the base JDA Activity if you don't set it, with a "Ping for help" message...
+        commandClientBuilder.setActivity(Activity.watching("over Minecraft servers!"))
+
+        jda = JDABuilder.createDefault(token).addEventListeners(this, commandClientBuilder.build()).build()
         pteroApi = PteroBuilder.createClient(dotenv["PTERODACTYL_URL"], dotenv["PTERODACTYL_API_KEY"])
 
-        pteroApi.retrieveServers().executeAsync { servers ->
-            debug("I've connected to Pterodactyl and found the following servers:")
-            servers.forEach { server -> debug("${server.name} -> ${server.node}") }
-        }
-
+        // TODO: Remove this as it is not applicable due to it being a per-server setting
+        pteroApi.retrieveServers().executeAsync({ servers ->
+            run {
+                debug("I've connected to Pterodactyl and found the following servers:")
+                servers.forEach { server -> debug("${server.name} -> ${server.node}") }
+            }
+        }, { failure ->
+            run {
+                debug("I was unable to reach out to your Pterodactyl Panel for some reason!")
+                error(failure.toString())
+            }
+        })
 
     }
 
